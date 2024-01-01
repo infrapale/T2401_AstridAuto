@@ -14,8 +14,8 @@ https://circuitdigest.com/microcontroller-projects/arduino-freertos-tutorial-usi
  
 // Pause in milliseconds between screens, change to 0 to time font rendering
 #define WAIT 1000
-#define PIRPANA
-//#define LILLA_ASTRID
+//#define PIRPANA
+#define LILLA_ASTRID
 //#define VILLA_ASTRID
 
 #define PIN_WIRE_SDA         (12u)
@@ -81,7 +81,10 @@ void setup(void) {
   delay(3000);
   while (!Serial);
   Serial.begin(115200); // For debug
-  Serial.println(F("T2311_TFT_Menu.ino"));
+  Serial.println(F("T401_AstridAuto.ino"));
+  Serial.print(F("Compiled: "));Serial.print(__DATE__);
+  Serial.println(F(" "));Serial.println(__TIME__);
+
   pinMode(TFT_BL, OUTPUT);  
   digitalWrite(TFT_BL, HIGH);
 
