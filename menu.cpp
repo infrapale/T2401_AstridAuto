@@ -1,6 +1,7 @@
 
 #include "main.h"
 #include "menu.h"
+#include "uart.h"
 
 #include "BtnPinOnOff.h"
 
@@ -18,6 +19,12 @@ void menu_test1(void)
    Serial.printf("Test 1\n");
 }
 
+void menu_relay_on(void)
+{
+    Serial.printf("menu_relay_on\n");
+    uart_send_relay_indx(VA_RELAY_KHH_1, RELAY_CMND_ON);
+}
+
 menu_row_st menu[MENU_NBR_OF] =
 {
   [MENU_MAIN] =
@@ -26,7 +33,7 @@ menu_row_st menu[MENU_NBR_OF] =
     {
       {"Main",MENU_MAIN, dummy_cb },
       {"Time",MENU_TIME, menu_test1 },
-      {"Astrid", MENU_VILLA_ASTRID, dummy_cb},
+      {"Astrid", MENU_VILLA_ASTRID, menu_relay_on},
       {"Outd", MENU_OUTDOOR, dummy_cb}
     }
   },

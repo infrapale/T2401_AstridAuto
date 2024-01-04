@@ -14,8 +14,8 @@ https://circuitdigest.com/microcontroller-projects/arduino-freertos-tutorial-usi
  
 // Pause in milliseconds between screens, change to 0 to time font rendering
 #define WAIT 1000
-//#define PIRPANA
-#define LILLA_ASTRID
+#define PIRPANA
+//#define LILLA_ASTRID
 //#define VILLA_ASTRID
 
 #define PIN_WIRE_SDA         (12u)
@@ -50,6 +50,8 @@ WiFiClient client;
 #define AIO_KEY         IO_KEY
 #define AIO_PUBLISH_INTERVAL_ms  60000
 
+
+module_data_st  me = {'X','1'};
 
 // RTC_PCF8563 rtc;
 

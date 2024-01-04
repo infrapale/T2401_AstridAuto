@@ -27,6 +27,12 @@ typedef enum
   AIO_PUBL_NBR_OF
 } aio_publ_et;
 
+typedef struct
+{
+    char            module;
+    char            addr;         
+} module_data_st;
+
 
 typedef struct
 {
