@@ -54,6 +54,7 @@ char measure_label[NBR_UNITS][MEASURE_LABEL_LEN] =
 
 value_st subs_data[AIO_SUBS_NBR_OF]
 {
+  [AIO_SUBS_TIME_ISO_8601] = {ZONE_VILLA_ASTRID, "IO ",  UNIT_TEMPERATURE, 0.0},
   [AIO_SUBS_VA_OD_TEMP] = {ZONE_VILLA_ASTRID, "OD ",  UNIT_TEMPERATURE, 0.0},
   [AIO_SUBS_VA_OD_HUM]  = {ZONE_VILLA_ASTRID, "OD ",  UNIT_HUMIDITY, 0.0}
 };
@@ -163,7 +164,7 @@ void dashboard_update_task(void *param)
                 break;
             case 2:
                 update_box = false;
-                for (uint8_t i = AIO_SUBS_VA_OD_TEMP; (i < AIO_SUBS_NBR_OF) && !update_box; i++ )
+                for (uint8_t i = AIO_SUBS_TIME_ISO_8601; (i < AIO_SUBS_NBR_OF) && !update_box; i++ )
                 {
                     Serial.print("aio index: "); Serial.println(i); 
                     if (subs_data[i].updated)
@@ -172,6 +173,9 @@ void dashboard_update_task(void *param)
                         subs_data[i].updated = false;
                         switch(i)
                         {
+                            case AIO_SUBS_TIME_ISO_8601:
+                              Serial.println("Time updated");
+                              break;
                             case AIO_SUBS_VA_OD_TEMP:
                               Str = zone_main_label[subs_data[i].main_zone_index];
                               Str += " ";

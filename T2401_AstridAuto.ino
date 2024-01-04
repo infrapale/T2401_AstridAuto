@@ -59,10 +59,13 @@ Adafruit_MQTT_Client aio_mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME,
 Adafruit_MQTT_Publish villa_astrid_home_mode   = Adafruit_MQTT_Publish(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.astrid-mode");
 Adafruit_MQTT_Subscribe villa_astrid_od_temp = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-temp");
 Adafruit_MQTT_Subscribe villa_astrid_od_hum  = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-hum");
+//Adafruit_MQTT_Subscribe time_iso_8601  = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/time/ISO-8601");
+Adafruit_MQTT_Subscribe time_iso_8601  = Adafruit_MQTT_Subscribe(&aio_mqtt, "time/ISO-8601");
 
 
 Adafruit_MQTT_Subscribe *aio_subs[AIO_SUBS_NBR_OF] =
 {
+  [AIO_SUBS_TIME_ISO_8601] = &time_iso_8601,
   [AIO_SUBS_VA_OD_TEMP] = &villa_astrid_od_temp,
   [AIO_SUBS_VA_OD_HUM]  = &villa_astrid_od_hum
 };
@@ -83,7 +86,7 @@ void setup(void) {
   delay(3000);
   while (!Serial);
   Serial.begin(115200); // For debug
-  Serial.println(F("T401_AstridAuto.ino"));
+  Serial.println(F("T2401_AstridAuto.ino"));
   Serial.print(F("Compiled: "));Serial.print(__DATE__);
   Serial.println(F(" "));Serial.println(__TIME__);
 

@@ -15,7 +15,8 @@
 
 typedef enum 
 {
-  AIO_SUBS_VA_OD_TEMP = 0,
+  AIO_SUBS_TIME_ISO_8601 = 0,
+  AIO_SUBS_VA_OD_TEMP,
   AIO_SUBS_VA_OD_HUM,
   AIO_SUBS_NBR_OF
 } aio_subs_et;

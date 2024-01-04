@@ -110,9 +110,10 @@ void aio_mqtt_stm(void *param)
           break;
         case 2:   
           Serial.print(F("Subscribe: "));
-          Serial.println(aio_subs[AIO_SUBS_VA_OD_TEMP]->topic);
-
-          aio_mqtt.subscribe(aio_subs[AIO_SUBS_VA_OD_TEMP]);
+          Serial.println(aio_subs[AIO_SUBS_TIME_ISO_8601]->topic);
+          aio_mqtt.subscribe(aio_subs[AIO_SUBS_TIME_ISO_8601]);
+          // Serial.println(aio_subs[AIO_SUBS_VA_OD_TEMP]->topic);
+          // aio_mqtt.subscribe(aio_subs[AIO_SUBS_VA_OD_TEMP]);
           aio_mqtt_ctrl.state++;
           break;
         case 3:
@@ -122,7 +123,7 @@ void aio_mqtt_stm(void *param)
           while ((aio_subscription = aio_mqtt.readSubscription(500))) 
           {
               Serial.println(aio_subscription->topic);
-              for (uint8_t sindx = AIO_SUBS_VA_OD_TEMP; sindx < AIO_SUBS_NBR_OF; sindx++ )
+              for (uint8_t sindx = AIO_SUBS_TIME_ISO_8601; sindx < AIO_SUBS_NBR_OF; sindx++ )
               {
                   if (aio_subscription == aio_subs[sindx]) 
                   {
@@ -130,10 +131,17 @@ void aio_mqtt_stm(void *param)
                       Serial.print(F(": "));
                       value_str = (char*)aio_subs[sindx]->lastread;
                       Serial.println(value_str);
-                      value = value_str.toFloat();
-                      log_add_subs_data((aio_subs_et)sindx, unix_time, value);
+                      if (sindx == AIO_SUBS_TIME_ISO_8601)
+                      {
 
-                      subs_data[sindx].value = value;
+                      }
+                      else 
+                      {
+                        value = value_str.toFloat();
+                        log_add_subs_data((aio_subs_et)sindx, unix_time, value);
+
+                        subs_data[sindx].value = value;
+                      }
                       subs_data[sindx].updated = true;
 
                       //ctrl.set_temp = atoi((char *)set_temperature.lastread);

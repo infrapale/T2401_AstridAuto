@@ -49,7 +49,7 @@ uint8_t time_group[24][AUTO_NBR_OF_TIME_GROUPS] =
 };
 
 
-va_relays_et *auto_get_auto_group(uint8_t hour)
+relay_group_t *auto_get_auto_group(uint8_t hour)
 {
   return &auto_group[time_group[hour][0]];
 }

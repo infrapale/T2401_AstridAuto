@@ -1,5 +1,6 @@
 #ifndef __AUTO_H__
 #define __AUTO_H__
+#include "relay.h"
 
 #define AUTO_NBR_OF_GROUPS      8
 #define AUTO_NBR_OF_RELAYS      4
