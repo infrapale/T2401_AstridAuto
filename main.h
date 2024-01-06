@@ -10,14 +10,15 @@
 #define UNIT_LEN    6
 #define TXT_LEN     40
 
-#define APP_NAME   "T2312_PicoConsole"
-#define MAIN_TITLE "Villa Astrid Console"
+#define APP_NAME   "T2401_AstridAuto"
+#define MAIN_TITLE "Astrid Automatic Light"
 
 typedef enum 
 {
   AIO_SUBS_TIME_ISO_8601 = 0,
   AIO_SUBS_VA_OD_TEMP,
   AIO_SUBS_VA_OD_HUM,
+  AIO_SUBS_VA_TUPA_TEMP,
   AIO_SUBS_NBR_OF
 } aio_subs_et;
 

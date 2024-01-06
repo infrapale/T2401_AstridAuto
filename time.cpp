@@ -1,10 +1,30 @@
 // https://github.com/adafruit/RTClib/blob/master/src/RTClib.h
+// https://adafruit.github.io/RTClib/html/class_date_time.html
+// https://arduinogetstarted.com/tutorials/arduino-rtc
+
 
 #include <Wire.h>
 #include "time.h"
 
+#define TIME_ZONE_ADD   7200
 //extern RTC_PCF8563 rtc;
 RTC_PCF8563 rtc;
+
+typedef enum
+{
+    TIME_COMPILED   = 0,
+    TIME_RTC,
+    TIME_FEED,
+    TIME_NBR_OF
+} time_index_et;
+
+typedef struct
+{
+    DateTime date_time;
+    bool updated;
+} time_st;
+
+time_st my_time[TIME_NBR_OF];
 
 char week_day[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
@@ -25,8 +45,19 @@ bool time_begin(void)
     ret = true;
     time_lost_power(true);
     rtc.start();
-    time_print();
   }
+  my_time[TIME_COMPILED].date_time = DateTime(F(__DATE__), F(__TIME__));
+  my_time[TIME_COMPILED].updated = true;
+  my_time[TIME_RTC].date_time  = rtc.now();
+  my_time[TIME_RTC].updated = true;
+  my_time[TIME_FEED].date_time  = rtc.now();
+  my_time[TIME_FEED].updated = false;
+  
+  Serial.print("TIME_COMPILED:");
+  time_print( my_time[TIME_COMPILED].date_time);
+  Serial.print("TIME_RTC:");
+  time_print(my_time[TIME_RTC].date_time);
+  Serial.flush();
   return ret;
 }
 
@@ -91,28 +122,56 @@ uint32_t time_get_epoc_time(void)
     return now.unixtime();
 }
 
-void time_print(void)
+void time_print(DateTime dt)
 {
-    DateTime now = rtc.now();
+    //DateTime now = rtc.now();
 
-    Serial.print(now.year(), DEC);
+    Serial.print(dt.year(), DEC);
     Serial.print('/');
-    Serial.print(now.month(), DEC);
+    Serial.print(dt.month(), DEC);
     Serial.print('/');
-    Serial.print(now.day(), DEC);
+    Serial.print(dt.day(), DEC);
     Serial.print(" (");
-    Serial.print(week_day[now.dayOfTheWeek()]);
+    Serial.print(week_day[dt.dayOfTheWeek()]);
     Serial.print(") ");
-    Serial.print(now.hour(), DEC);
+    Serial.print(dt.hour(), DEC);
     Serial.print(':');
-    Serial.print(now.minute(), DEC);
+    Serial.print(dt.minute(), DEC);
     Serial.print(':');
-    Serial.print(now.second(), DEC);
+    Serial.print(dt.second(), DEC);
     Serial.println();
 
-    Serial.print(" since midnight 1/1/1970 = ");
-    Serial.print(now.unixtime());
-    Serial.print("s = ");
-    Serial.print(now.unixtime() / 86400L);
-    Serial.println("d");
+    // Serial.print(" since midnight 1/1/1970 = ");
+    // Serial.print(dt.unixtime());
+    // Serial.print("s = ");
+    // Serial.print(dt.unixtime() / 86400L);
+    // Serial.println("d");
 }
+
+void time_test_iso_8601(void)
+{
+    char iso8601[] = "2024-01-05T13:52:51.107Z";
+    DateTime date_time(iso8601);
+    //uint32_t sec_time;
+    TimeSpan tz_adjust(TIME_ZONE_ADD);
+    //sec_time = date_time1.secondstime();
+    // DateTime date_time(sec_time + TIME_ZONE_ADD); 
+    date_time = date_time + tz_adjust;
+    Serial.println(iso8601);
+    if (date_time.isValid()) 
+    {
+        Serial.println("Is valid!"); 
+        Serial.print(date_time.year()); Serial.print("-");
+        Serial.print(date_time.month()); Serial.print("-");
+        Serial.print(date_time.day()); Serial.print(" ");
+        Serial.print(date_time.hour()); Serial.print(":");
+        Serial.print(date_time.minute()); Serial.print("\n");
+
+    }
+    else
+    {
+        Serial.println("Is NOT valid!"); 
+    }
+
+}
+

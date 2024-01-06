@@ -2,7 +2,7 @@
 #include "main.h"
 #include "menu.h"
 #include "uart.h"
-
+#include "time.h"
 #include "BtnPinOnOff.h"
 
 #define NBR_MENU_KEYS  4
@@ -23,6 +23,8 @@ void menu_relay_on(void)
 {
     Serial.printf("menu_relay_on\n");
     uart_send_relay_indx(VA_RELAY_KHH_1, RELAY_CMND_ON);
+
+    time_test_iso_8601();
 }
 
 menu_row_st menu[MENU_NBR_OF] =

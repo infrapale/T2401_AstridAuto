@@ -14,9 +14,9 @@ https://circuitdigest.com/microcontroller-projects/arduino-freertos-tutorial-usi
  
 // Pause in milliseconds between screens, change to 0 to time font rendering
 #define WAIT 1000
-#define PIRPANA
+//#define PIRPANA
 //#define LILLA_ASTRID
-//#define VILLA_ASTRID
+#define VILLA_ASTRID
 
 #define PIN_WIRE_SDA         (12u)
 #define PIN_WIRE_SCL         (13u)
@@ -56,9 +56,10 @@ module_data_st  me = {'X','1'};
 // RTC_PCF8563 rtc;
 
 Adafruit_MQTT_Client aio_mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
-Adafruit_MQTT_Publish villa_astrid_home_mode   = Adafruit_MQTT_Publish(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.astrid-mode");
-Adafruit_MQTT_Subscribe villa_astrid_od_temp = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-temp");
-Adafruit_MQTT_Subscribe villa_astrid_od_hum  = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-hum");
+Adafruit_MQTT_Publish villa_astrid_home_mode    = Adafruit_MQTT_Publish(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.astrid-mode");
+Adafruit_MQTT_Subscribe villa_astrid_od_temp    = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-temp");
+Adafruit_MQTT_Subscribe villa_astrid_od_hum     = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-hum");
+Adafruit_MQTT_Subscribe villa_astrid_tupa_temp  = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.tupa-temp");
 //Adafruit_MQTT_Subscribe time_iso_8601  = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/time/ISO-8601");
 Adafruit_MQTT_Subscribe time_iso_8601  = Adafruit_MQTT_Subscribe(&aio_mqtt, "time/ISO-8601");
 
@@ -67,7 +68,8 @@ Adafruit_MQTT_Subscribe *aio_subs[AIO_SUBS_NBR_OF] =
 {
   [AIO_SUBS_TIME_ISO_8601] = &time_iso_8601,
   [AIO_SUBS_VA_OD_TEMP] = &villa_astrid_od_temp,
-  [AIO_SUBS_VA_OD_HUM]  = &villa_astrid_od_hum
+  [AIO_SUBS_VA_OD_HUM]  = &villa_astrid_od_hum,
+  [AIO_SUBS_VA_TUPA_TEMP] = &villa_astrid_tupa_temp,
 };
 
 Adafruit_MQTT_Publish *aio_publ[AIO_PUBL_NBR_OF] =
@@ -84,9 +86,9 @@ SemaphoreHandle_t mutex_v;
 
 void setup(void) {
   delay(3000);
-  while (!Serial);
+  //while (!Serial);
   Serial.begin(115200); // For debug
-  Serial.println(F("T2401_AstridAuto.ino"));
+  Serial.println(F(APP_NAME));
   Serial.print(F("Compiled: "));Serial.print(__DATE__);
   Serial.println(F(" "));Serial.println(__TIME__);
 

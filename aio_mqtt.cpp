@@ -59,7 +59,7 @@ int8_t aio_mqtt_connect() {
             case 6: Serial.println(F("Failed to subscribe")); break;
             default: Serial.println(F("Connection failed")); break;
         }
-
+        Serial.println(aio_mqtt.connectErrorString(ret));
         if(ret >= 0) aio_mqtt.disconnect();
         Serial.println(F("Retrying connection…"));
         aio_mqtt_ctrl.conn_faults++;
@@ -98,6 +98,13 @@ void aio_mqtt_stm(void *param)
           // Serial.println(F("\nWiFi connected"));
           // Serial.println(F("IP address: "));
           // Serial.println(WiFi.localIP());
+          Serial.println(F("Subscribe to feeds: "));
+          Serial.println(aio_subs[AIO_SUBS_TIME_ISO_8601]->topic);
+          aio_mqtt.subscribe(aio_subs[AIO_SUBS_TIME_ISO_8601]);
+          Serial.println(aio_subs[AIO_SUBS_VA_OD_TEMP]->topic);
+          aio_mqtt.subscribe(aio_subs[AIO_SUBS_VA_OD_TEMP]);
+          Serial.println(aio_subs[AIO_SUBS_VA_TUPA_TEMP]->topic);
+          aio_mqtt.subscribe(aio_subs[AIO_SUBS_VA_TUPA_TEMP]);
           aio_mqtt_ctrl.state++;
           break;
         case 1:
@@ -109,11 +116,6 @@ void aio_mqtt_stm(void *param)
           }
           break;
         case 2:   
-          Serial.print(F("Subscribe: "));
-          Serial.println(aio_subs[AIO_SUBS_TIME_ISO_8601]->topic);
-          aio_mqtt.subscribe(aio_subs[AIO_SUBS_TIME_ISO_8601]);
-          // Serial.println(aio_subs[AIO_SUBS_VA_OD_TEMP]->topic);
-          // aio_mqtt.subscribe(aio_subs[AIO_SUBS_VA_OD_TEMP]);
           aio_mqtt_ctrl.state++;
           break;
         case 3:
