@@ -43,40 +43,10 @@ TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
 #define WLAN_PASS       WIFI_PASS
 WiFiClient client;
 
-// Adafruit IO
-#define AIO_SERVER      "io.adafruit.com"
-#define AIO_SERVERPORT  1883
-#define AIO_USERNAME    IO_USERNAME
-#define AIO_KEY         IO_KEY
-#define AIO_PUBLISH_INTERVAL_ms  60000
-
 
 module_data_st  me = {'X','1'};
 
 // RTC_PCF8563 rtc;
-
-Adafruit_MQTT_Client aio_mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
-Adafruit_MQTT_Publish villa_astrid_home_mode    = Adafruit_MQTT_Publish(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.astrid-mode");
-Adafruit_MQTT_Subscribe villa_astrid_od_temp    = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-temp");
-Adafruit_MQTT_Subscribe villa_astrid_od_hum     = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.ulko-hum");
-Adafruit_MQTT_Subscribe villa_astrid_tupa_temp  = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/villaastrid.tupa-temp");
-//Adafruit_MQTT_Subscribe time_iso_8601  = Adafruit_MQTT_Subscribe(&aio_mqtt, AIO_USERNAME "/feeds/time/ISO-8601");
-Adafruit_MQTT_Subscribe time_iso_8601  = Adafruit_MQTT_Subscribe(&aio_mqtt, "time/ISO-8601");
-
-
-Adafruit_MQTT_Subscribe *aio_subs[AIO_SUBS_NBR_OF] =
-{
-  [AIO_SUBS_TIME_ISO_8601] = &time_iso_8601,
-  [AIO_SUBS_VA_OD_TEMP] = &villa_astrid_od_temp,
-  [AIO_SUBS_VA_OD_HUM]  = &villa_astrid_od_hum,
-  [AIO_SUBS_VA_TUPA_TEMP] = &villa_astrid_tupa_temp,
-};
-
-Adafruit_MQTT_Publish *aio_publ[AIO_PUBL_NBR_OF] =
-{
-  [AIO_PUBL_VA_HOME_MODE] = &villa_astrid_home_mode,
-  [AIO_PUBL_VA_AC_TEMP]  = &villa_astrid_home_mode
-};
 
 
 

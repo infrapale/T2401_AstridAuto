@@ -5,9 +5,10 @@
 
 #include <Wire.h>
 #include "time.h"
+#include "aio_mqtt.h"
 
 #define TIME_ZONE_ADD   7200
-//extern RTC_PCF8563 rtc;
+extern aio_subs_st io_subs[AIO_SUBS_NBR_OF];
 RTC_PCF8563 rtc;
 
 typedef enum
@@ -120,6 +121,22 @@ uint32_t time_get_epoc_time(void)
 {
     DateTime now = rtc.now();
     return now.unixtime();
+}
+
+void time_set_aio_feed(void)
+{
+    DateTime date_time = DateTime(io_subs[AIO_SUBS_TIME_ISO_8601].value_str);
+    if (date_time.isValid()) 
+    {
+        TimeSpan tz_adjust(TIME_ZONE_ADD);
+        date_time = date_time + tz_adjust;
+        rtc.adjust(date_time);
+    }
+}
+
+void time_set_compiled(void)
+{
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 void time_print(DateTime dt)

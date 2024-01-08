@@ -12,6 +12,10 @@ void time_to_string(String *Str);
 
 void time_print(DateTime dt);
 
+void time_set_aio_feed(void);
+
+void time_set_compiled(void);
+
 void time_test_iso_8601(void);
 
 #endif

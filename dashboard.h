@@ -2,6 +2,7 @@
 #define __DASHBOARD_H__
 
 #include "main.h"
+#include "aio_mqtt.h"
 #include <TFT_eSPI.h> 
 
 #define NBR_MAIN_ZONES      4
@@ -20,14 +21,6 @@ typedef enum
     ZONE_TAMPERE
 } main_zone_et;
 
-typedef enum
-{
-    UNIT_TEMPERATURE = 0,
-    UNIT_HUMIDITY,
-    UNIT_AIR_PRESSURE,
-    UNIT_LIGHT,
-    UNIT_LDR
-} unit_et;
 
 typedef struct
 {

@@ -56,8 +56,9 @@ typedef enum
 
 typedef struct
 {
-    char  unit[4];
-    char  relay[6];
+    char    unit[4];
+    char    relay[6];
+    uint8_t state;
 } relay_addr_st;
 
 const relay_addr_st *relay_get_addr_ptr( va_relays_et relay_id);

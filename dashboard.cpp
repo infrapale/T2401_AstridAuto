@@ -6,7 +6,8 @@
 #define NBR_BOXES           7
 
 
-extern value_st subs_data[];
+//extern value_st subs_data[];
+extern aio_subs_st io_subs[AIO_SUBS_NBR_OF];
 
 extern TFT_eSPI tft;
 
@@ -32,33 +33,33 @@ char zone_main_label[NBR_MAIN_ZONES][MAIN_ZONE_LABEL_LEN] =
 };
 
 
-char unit_label[NBR_UNITS][UNIT_LABEL_LEN] =
+char unit_label[UNIT_NBR_OF][UNIT_LABEL_LEN] =
 {
   // 012345678
+    "        ",
     "Celsius ",
     "%       ",
     "kPa     ",
     "Lux     ",
-    "LDR     "
+    "LDR     ",
+    "yyymmdd ",
+    "        ",
+    "        "
 };
 
-char measure_label[NBR_UNITS][MEASURE_LABEL_LEN] =
+char measure_label[UNIT_NBR_OF][MEASURE_LABEL_LEN] =
 {
   // 0123456789012345
+    "Undefined      ",
     "Temperature    ",
     "Humidity       ",
     "Air Pressure   ",
     "Light          ",
-    "LDR Value      "
+    "LDR Value      ",
+    "Date Time      ",
+    "Date           ",
+    "Time           ",
 };
-
-value_st subs_data[AIO_SUBS_NBR_OF]
-{
-  [AIO_SUBS_TIME_ISO_8601] = {ZONE_VILLA_ASTRID, "IO ",  UNIT_TEMPERATURE, 0.0},
-  [AIO_SUBS_VA_OD_TEMP] = {ZONE_VILLA_ASTRID, "OD ",  UNIT_TEMPERATURE, 0.0},
-  [AIO_SUBS_VA_OD_HUM]  = {ZONE_VILLA_ASTRID, "OD ",  UNIT_HUMIDITY, 0.0}
-};
-
 
 void dashboard_draw_box(uint8_t bindx)
 {
@@ -144,7 +145,7 @@ void dashboard_update_task(void *param)
     uint16_t v_delay_ms = 1000;
     bool    update_box;
     String  Str;
-
+    uint8_t  show_cntr = 0;
     vTaskDelay( 5000 / portTICK_PERIOD_MS );
     for (;;)
     {
@@ -167,32 +168,28 @@ void dashboard_update_task(void *param)
                 for (uint8_t i = AIO_SUBS_TIME_ISO_8601; (i < AIO_SUBS_NBR_OF) && !update_box; i++ )
                 {
                     Serial.print("aio index: "); Serial.println(i); 
-                    if (subs_data[i].updated)
+                    if ( io_subs[i].updated )
                     {
                         Serial.println("Updated ");
-                        subs_data[i].updated = false;
+                        io_subs[i].updated = false;
                         switch(i)
                         {
                             case AIO_SUBS_TIME_ISO_8601:
                               Serial.println("Time updated");
                               break;
-                            case AIO_SUBS_VA_OD_TEMP:
-                              Str = zone_main_label[subs_data[i].main_zone_index];
+                            default:
+                              // Str = zone_main_label[io_subs[i].label];
+                              // Str.toCharArray(db_box[2].txt,40);
+                              Str = io_subs[i].label;
                               Str += " ";
-                              Str += subs_data[i].sub_zone;
-                              Str.toCharArray(db_box[2].txt,40);
-
-                              Str = measure_label[subs_data[i].unit_index];
-                              Str += " ";
-                              Str += unit_label[subs_data[i].unit_index];
+                              Str += unit_label[io_subs[i].unit_index];
                               Str.toCharArray(db_box[3].txt, TXT_LEN);
 
-                              Str = String(subs_data[i].value);
-                              Serial.println(Str);
-                              Str.toCharArray(db_box[1].txt,6);
+                              Serial.println(io_subs[i].value_str);
+                              strcpy(db_box[1].txt, io_subs[i].value_str);
+                              show_cntr = io_subs[i].show_iter;
                               update_box = true;
-                              break;
-                            case AIO_SUBS_VA_OD_HUM:
+                              state++;
                               break;
                         }
                         if (update_box)
@@ -205,13 +202,15 @@ void dashboard_update_task(void *param)
                     }
                 }
                 v_delay_ms = 5000;
-                state = 1;
-
+                break;
+            case 3:
+                if (show_cntr > 0) 
+                    show_cntr--;
+                else 
+                    state = 1;
                 break;
 
         }
         vTaskDelay( v_delay_ms / portTICK_PERIOD_MS );
     }
-
-
 }

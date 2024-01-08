@@ -4,6 +4,7 @@
 #include "uart.h"
 #include "time.h"
 #include "BtnPinOnOff.h"
+#include "aio_mqtt.h"
 
 #define NBR_MENU_KEYS  4
 
@@ -36,7 +37,7 @@ menu_row_st menu[MENU_NBR_OF] =
       {"Main",MENU_MAIN, dummy_cb },
       {"Time",MENU_TIME, menu_test1 },
       {"Astrid", MENU_VILLA_ASTRID, menu_relay_on},
-      {"Outd", MENU_OUTDOOR, dummy_cb}
+      {"Outd", MENU_OUTDOOR, aio_mqtt_print_feeds}
     }
   },
   [MENU_TIME] =
@@ -45,8 +46,8 @@ menu_row_st menu[MENU_NBR_OF] =
     {
       {"Main",MENU_MAIN, dummy_cb },
       {"Time",MENU_TIME, dummy_cb},
-      {"Set", MENU_TIME, dummy_cb},
-      {"Main", MENU_MAIN, dummy_cb}
+      {"Set AIO", MENU_TIME, time_set_aio_feed},
+      {"__X__", MENU_MAIN, time_set_compiled}
     }
   },
   [MENU_VILLA_ASTRID] =
