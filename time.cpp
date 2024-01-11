@@ -125,13 +125,17 @@ uint32_t time_get_epoc_time(void)
 
 void time_set_aio_feed(void)
 {
-    DateTime date_time = DateTime(io_subs[AIO_SUBS_TIME_ISO_8601].value_str);
-    if (date_time.isValid()) 
-    {
-        TimeSpan tz_adjust(TIME_ZONE_ADD);
-        date_time = date_time + tz_adjust;
-        rtc.adjust(date_time);
-    }
+    //char s[80];
+    // DateTime date_time = DateTime(io_subs[AIO_SUBS_TIME_ISO_8601].value_str);
+    // if (date_time.isValid()) 
+    // {
+    //     TimeSpan tz_adjust(TIME_ZONE_ADD);
+    //     date_time = date_time + tz_adjust;
+    //     //date_time.toString(s);
+    //     Serial.print("Set AIO time: ");
+    //     time_print(date_time);
+    //     rtc.adjust(date_time);
+    // }
 }
 
 void time_set_compiled(void)

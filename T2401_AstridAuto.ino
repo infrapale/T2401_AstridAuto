@@ -14,9 +14,9 @@ https://circuitdigest.com/microcontroller-projects/arduino-freertos-tutorial-usi
  
 // Pause in milliseconds between screens, change to 0 to time font rendering
 #define WAIT 1000
-//#define PIRPANA
+#define PIRPANA
 //#define LILLA_ASTRID
-#define VILLA_ASTRID
+//#define VILLA_ASTRID
 
 #define PIN_WIRE_SDA         (12u)
 #define PIN_WIRE_SCL         (13u)
@@ -55,15 +55,15 @@ SemaphoreHandle_t sema_v;
 SemaphoreHandle_t mutex_v;
 
 void setup(void) {
+  pinMode(TFT_BL, OUTPUT);  
+  digitalWrite(TFT_BL, HIGH);
   delay(3000);
-  //while (!Serial);
+  while (!Serial);
   Serial.begin(115200); // For debug
   Serial.println(F(APP_NAME));
   Serial.print(F("Compiled: "));Serial.print(__DATE__);
   Serial.println(F(" "));Serial.println(__TIME__);
 
-  pinMode(TFT_BL, OUTPUT);  
-  digitalWrite(TFT_BL, HIGH);
 
   Wire.setSDA(PIN_WIRE_SDA);
   Wire.setSCL(PIN_WIRE_SCL);
