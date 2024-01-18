@@ -5,10 +5,10 @@
 
 #include <Wire.h>
 #include "time.h"
-#include "aio_mqtt.h"
+// #include "aio_mqtt.h"
 
 #define TIME_ZONE_ADD   7200
-extern aio_subs_st io_subs[AIO_SUBS_NBR_OF];
+// extern aio_subs_st io_subs[AIO_SUBS_NBR_OF];
 RTC_PCF8563 rtc;
 
 typedef enum
@@ -134,6 +134,7 @@ void time_set_aio_feed(void)
     //     //date_time.toString(s);
     //     Serial.print("Set AIO time: ");
     //     time_print(date_time);
+    
     //     rtc.adjust(date_time);
     // }
 }

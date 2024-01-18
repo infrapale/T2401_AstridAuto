@@ -1,7 +1,20 @@
+
   
 #include "relay.h"
 #include "main.h"
- 
+
+const int16_t relay_groups[VA_RELAY_GROUP_NBR_OF] =
+{
+    [VA_RELAY_GROUP_ALL]      = RELAY_GR_BIT_ALL,
+    [VA_RELAY_GROUP_ARRIVE]   = RELAY_GR_BIT_ARRIVE,
+    [VA_RELAY_GROUP_TUPA]     = RELAY_GR_BIT_TUPA,
+    [VA_RELAY_GROUP_MH1]      = RELAY_GR_BIT_MH1,
+    [VA_RELAY_GROUP_MH2]      = RELAY_GR_BIT_MH2,
+    [VA_RELAY_GROUP_K]        = RELAY_GR_BIT_K,
+    [VA_RELAY_GROUP_KHH]      = RELAY_GR_BIT_KHH,
+    [VA_RELAY_GROUP_ULKO]     = RELAY_GR_BIT_ULKO,
+};
+
 
 relay_addr_st relay_addr[VA_RELAY_NBR_OF] =
 {
@@ -35,13 +48,22 @@ relay_addr_st relay_addr[VA_RELAY_NBR_OF] =
 };
 
 
+void relay_send_one(va_relays_et rindx, char value)
+{
+    // <#X1N:RMH1;RKOK1;T;->\n  
+    // {"Z":"MH1","S":"RKOK1","V":"T","R":"-"}
+    Serial.printf("%s %s %c\n", relay_addr[rindx].unit,relay_addr[rindx].relay, value);
+    Serial.printf("<#X1N:%s;%s;%c;->\n", relay_addr[rindx].unit,relay_addr[rindx].relay, value);
+    SerialRfm.printf("<#X1N:%s;%s;%c;->\n", relay_addr[rindx].unit,relay_addr[rindx].relay, value);
+}
+
 const relay_addr_st *relay_get_addr_ptr( va_relays_et relay_id)
 {
     return &relay_addr[relay_id];
 }
 
-const va_relays_et relay_get_group_item(va_relay_group_et gindx, uint8_t rindx)
+bool relay_get_is_relay_in_group(va_relays_et rindx, uint8_t gindx )
 {
-    return relay_group[gindx][rindx];
+    return ((relay_groups[gindx] & relay_addr[rindx].group_map) != 0);
 }
 

@@ -37,11 +37,26 @@ typedef enum
 
 typedef enum
 {
-    VA_RELAY_GROUP_MH1 = 0,
-    VA_RELAY_GROUP_MH2,
+    RELAY_GR_BIT_ALL      = 0x0001UL,
+    RELAY_GR_BIT_ARRIVE   = 0x0002UL,
+    RELAY_GR_BIT_TUPA     = 0x0004UL,
+    RELAY_GR_BIT_MH1      = 0x0008UL,
+    RELAY_GR_BIT_MH2      = 0x0010UL,
+    RELAY_GR_BIT_K        = 0x0020UL,
+    RELAY_GR_BIT_KHH      = 0x0040UL,
+    RELAY_GR_BIT_ULKO     = 0x0080UL,
+    //RELAY_GR_BIT_   = 0x0000,
+} relay_group_nbit_et;
+
+typedef enum
+{
+    VA_RELAY_GROUP_ALL  = 0,
+    VA_RELAY_GROUP_ARRIVE,
     VA_RELAY_GROUP_TUPA,
-    VA_RELAY_GROUP_KEITTIO,
-    VA_RELAY_GROUP_KHH_PSH,
+    VA_RELAY_GROUP_MH1,
+    VA_RELAY_GROUP_MH2,
+    VA_RELAY_GROUP_K,
+    VA_RELAY_GROUP_KHH,
     VA_RELAY_GROUP_ULKO,
     VA_RELAY_GROUP_NBR_OF   
 } va_relay_group_et;
@@ -59,11 +74,18 @@ typedef struct
     char    unit[4];
     char    relay[6];
     uint8_t state;
+    uint16_t  group_map;
 } relay_addr_st;
+
 
 const relay_addr_st *relay_get_addr_ptr( va_relays_et relay_id);
 
 const va_relays_et relay_get_group_item(va_relay_group_et gindx, uint8_t rindx);
+
+void relay_send_one(va_relays_et rindx, char value);
+
+bool relay_get_is_relay_in_group(va_relays_et rindx, uint8_t gindx );
+
 
 
 #endif

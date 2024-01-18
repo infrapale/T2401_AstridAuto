@@ -1,4 +1,4 @@
-#include "SerialUSB.h"
+//#include "SerialUSB.h"
 #include "main.h"
 #include "dashboard.h"
 #include "time.h"
@@ -138,29 +138,31 @@ void dashboard_clear(void)
 {
 
 }
-void dashboard_update_task(void *param)
+void dashboard_update_task(void)
 {
-    (void) param;
-    uint8_t state = 0;
-    uint16_t v_delay_ms = 1000;
-    bool    update_box;
-    String  Str;
-    uint8_t  show_cntr = 0;
-    vTaskDelay( 5000 / portTICK_PERIOD_MS );
-    for (;;)
+    static uint8_t  state = 0;
+    static uint32_t next_run = 0;
+    bool            update_box;
+    String          Str;
+    uint8_t         show_cntr = 0;
+
+    if (next_run == 0)
     {
+       next_run = millis() + 100;
+    }
+    else if (millis() > next_run)
+    {
+        next_run = millis() + 5000;
         Serial.print("dashboard_update_task state: "); Serial.println(state);
         switch (state)
         {
             case 0:
                 dashboard_show_info();
-                v_delay_ms = 10000;
                 state++;
                 break;
             case 1:                
                 dashboard_show_common();
                 dashboard_big_time();
-                v_delay_ms = 5000;
                 state++;
                 break;
             case 2:
@@ -201,7 +203,6 @@ void dashboard_update_task(void *param)
                         }
                     }
                 }
-                v_delay_ms = 5000;
                 break;
             case 3:
                 if (show_cntr > 0) 
@@ -209,8 +210,6 @@ void dashboard_update_task(void *param)
                 else 
                     state = 1;
                 break;
-
         }
-        vTaskDelay( v_delay_ms / portTICK_PERIOD_MS );
     }
 }

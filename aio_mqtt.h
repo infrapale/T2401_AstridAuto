@@ -1,6 +1,8 @@
 #ifndef __AIO_MQTT_H__
 #define __AIO_MQTT_H__
 #include "main.h"
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT_Client.h"
 
 typedef enum 
 {
@@ -19,7 +21,6 @@ typedef enum
 } aio_publ_et;
 
 
-
 typedef struct 
 {
     Adafruit_MQTT_Subscribe *feed;
@@ -33,7 +34,9 @@ typedef struct
 } aio_subs_st;
 
 
-void aio_mqtt_stm(void *param);
+
+
+void aio_mqtt_stm(void);
 
 void aio_mqtt_print_feeds(void);
 

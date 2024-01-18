@@ -2,15 +2,16 @@
 #define __MAIN_H__
 
 #define   BOARD_PICO_TFT_4KEYS
+#include <Arduino.h>
 #include <board.h>
-#include <FreeRTOS.h>
-#include <semphr.h>
-#include "secrets.h"
-#include <WiFi.h>
-#include "Adafruit_MQTT.h"
+//#include <FreeRTOS.h>
+//#include <semphr.h>
+//#include "secrets.h"
+//#include <WiFi.h>
+//#include "Adafruit_MQTT.h"
 // #include "Adafruit_MQTT_Client.h"
 // #include "Adafruit_MQTT.h"
-#include <task.h>
+// #include <task.h>
 
 #define LABEL_LEN   20
 #define UNIT_LEN    6
@@ -18,6 +19,9 @@
 
 #define APP_NAME   "T2401_AstridAuto"
 #define MAIN_TITLE "Astrid Automatic Light"
+
+#define SerialRfm  Serial1
+
 
 
 typedef enum

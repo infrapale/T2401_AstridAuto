@@ -38,7 +38,7 @@ void dashboard_update_all(void);
 
 void dashboard_set_text(uint8_t box_indx, char *txt_ptr);
 
-void dashboard_update_task(void *param);
+void dashboard_update_task(void);
 
 
 #endif
