@@ -5,10 +5,10 @@
 
 #include <Wire.h>
 #include "time.h"
-// #include "aio_mqtt.h"
+#include "aio_mqtt.h"
 
 #define TIME_ZONE_ADD   7200
-// extern aio_subs_st io_subs[AIO_SUBS_NBR_OF];
+extern aio_subs_st io_subs[AIO_SUBS_NBR_OF];
 RTC_PCF8563 rtc;
 
 typedef enum
@@ -125,22 +125,23 @@ uint32_t time_get_epoc_time(void)
 
 void time_set_aio_feed(void)
 {
-    //char s[80];
-    // DateTime date_time = DateTime(io_subs[AIO_SUBS_TIME_ISO_8601].value_str);
-    // if (date_time.isValid()) 
-    // {
-    //     TimeSpan tz_adjust(TIME_ZONE_ADD);
-    //     date_time = date_time + tz_adjust;
-    //     //date_time.toString(s);
-    //     Serial.print("Set AIO time: ");
-    //     time_print(date_time);
+    char s[80];
+    DateTime date_time = DateTime(io_subs[AIO_SUBS_TIME_ISO_8601].value_str);
+    if (date_time.isValid()) 
+    {
+        TimeSpan tz_adjust(TIME_ZONE_ADD);
+        date_time = date_time + tz_adjust;
+        //date_time.toString(s);
+        Serial.print("Set AIO time: ");
+        time_print(date_time);
     
-    //     rtc.adjust(date_time);
-    // }
+        rtc.adjust(date_time);
+    }
 }
 
 void time_set_compiled(void)
 {
+    Serial.printf("Comiled: %s %s/n", __DATE__, __TIME__);
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 

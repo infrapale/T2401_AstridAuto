@@ -77,6 +77,7 @@ aio_mqtt_ctrl_st aio_mqtt_ctrl =
   .next_run = 0
 };
 
+// Core 0 Data
 module_data_st  me = {'X','1'};
 
 TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
@@ -109,31 +110,13 @@ Adafruit_MQTT_Publish *aio_publ[AIO_PUBL_NBR_OF] =
 
 Adafruit_MQTT_Subscribe *aio_subscription;
 
-
-// module_data_st  me = {'X','1'};
-
-// RTC_PCF8563 rtc;
+// Task Handler Declarations
 TaHa TaHa_aio;
 TaHa TaHa_dashboard;
 TaHa TaHa_read_button;
 
-
-unsigned long     targetTime = 0; // Used for testing draw times
-// SemaphoreHandle_t sema_v; 
-// SemaphoreHandle_t mutex_v;
-
-
-
-float ltx = 0;    // Saved x coord of bottom of needle
-uint16_t osx = 120, osy = 120; // Saved x & y coords
-uint32_t updateTime = 0;       // time for next update
-
-int old_analog =  -999; // Value last displayed
-int old_digital = -999; // Value last displayed
-
-int value[6] = {0, 0, 0, 0, 0, 0};
-int old_value[6] = { -1, -1, -1, -1, -1, -1};
-int d = 0;
+// Core 1 Data
+uint32_t key_scan_time = 0;  //
 
 void setup(void) {
   pinMode(TFT_BL, OUTPUT);  
@@ -177,13 +160,12 @@ void setup(void) {
   // dashboard_draw_box(0);
   tft.fillScreen(TFT_BLACK);
   menu_draw();
-  updateTime = millis(); // Next update time
 }
 
 void setup1()
 {
   menu_initialize();
-  targetTime = millis() + 10;
+  key_scan_time = millis() + 10;
 }
 
 void loop() 
@@ -195,9 +177,9 @@ void loop()
 
 void loop1()
 {   
-  if (millis() > targetTime)
+  if (millis() > key_scan_time)
   {
-    targetTime = millis() + 10;
+    key_scan_time = millis() + 10;
     menu_button_scan();
   }
 }

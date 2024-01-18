@@ -153,7 +153,7 @@ void dashboard_update_task(void)
     else if (millis() > next_run)
     {
         next_run = millis() + 5000;
-        Serial.print("dashboard_update_task state: "); Serial.println(state);
+        // Serial.print("dashboard_update_task state: "); Serial.println(state);
         switch (state)
         {
             case 0:
@@ -169,7 +169,7 @@ void dashboard_update_task(void)
                 update_box = false;
                 for (uint8_t i = AIO_SUBS_TIME_ISO_8601; (i < AIO_SUBS_NBR_OF) && !update_box; i++ )
                 {
-                    Serial.print("aio index: "); Serial.println(i); 
+                    //Serial.print("dashboard aio index: "); Serial.println(i); 
                     if ( io_subs[i].updated )
                     {
                         Serial.println("Updated ");

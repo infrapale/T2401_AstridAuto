@@ -46,7 +46,7 @@ menu_row_st menu[MENU_NBR_OF] =
     {
       {"Main",MENU_MAIN, dummy_cb },
       {"Time",MENU_TIME, dummy_cb},
-      {"Set AIO", MENU_TIME, time_set_aio_feed},
+      {"Set AIO", MENU_MAIN, time_set_aio_feed},
       {"__X__", MENU_MAIN, time_set_compiled}
     }
   },
