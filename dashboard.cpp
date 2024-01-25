@@ -1,5 +1,6 @@
 //#include "SerialUSB.h"
 #include "main.h"
+#include "task.h"
 #include "dashboard.h"
 #include "time.h"
 
@@ -8,7 +9,7 @@
 
 //extern value_st subs_data[];
 extern aio_subs_st io_subs[AIO_SUBS_NBR_OF];
-
+extern task_st task[TASK_NBR_OF];
 extern TFT_eSPI tft;
 
 disp_box_st db_box[NBR_BOXES] =
@@ -20,16 +21,6 @@ disp_box_st db_box[NBR_BOXES] =
   {  0,  64, 319,  32, "Box 4", 4, 1, TFT_BLACK, TFT_GOLD, TFT_WHITE},
   {  0,  96, 319,  32, "Box 5", 4, 1, TFT_BLACK, TFT_GOLD, TFT_WHITE},
   {  0,  90, 319,  90, "Box 6", 8, 1, TFT_BLACK, TFT_VIOLET, TFT_GOLD },
-};
-
-
-char zone_main_label[NBR_MAIN_ZONES][MAIN_ZONE_LABEL_LEN] =
-{ 
-  // 01234567890123456789
-    "Villa Astrid   ",
-    "Lilla Astrid   ",
-    "Laituri        ",
-    "Tampere        "    
 };
 
 
@@ -140,76 +131,66 @@ void dashboard_clear(void)
 }
 void dashboard_update_task(void)
 {
-    static uint8_t  state = 0;
-    static uint32_t next_run = 0;
+    //static uint8_t  state = 0;
+    //static uint32_t next_run = 0;
     bool            update_box;
     String          Str;
     uint8_t         show_cntr = 0;
 
-    if (next_run == 0)
+    switch (task[TASK_DASHBOARD].state)
     {
-       next_run = millis() + 100;
-    }
-    else if (millis() > next_run)
-    {
-        next_run = millis() + 5000;
-        // Serial.print("dashboard_update_task state: "); Serial.println(state);
-        switch (state)
-        {
-            case 0:
-                dashboard_show_info();
-                state++;
-                break;
-            case 1:                
-                dashboard_show_common();
-                dashboard_big_time();
-                state++;
-                break;
-            case 2:
-                update_box = false;
-                for (uint8_t i = AIO_SUBS_TIME_ISO_8601; (i < AIO_SUBS_NBR_OF) && !update_box; i++ )
+        case 0:
+            dashboard_show_info();
+            task[TASK_DASHBOARD].state++;
+            break;
+        case 1:                
+            dashboard_show_common();
+            dashboard_big_time();
+            task[TASK_DASHBOARD].state++;
+            break;
+        case 2:
+            update_box = false;
+            for (uint8_t i = AIO_SUBS_TIME_ISO_8601; (i < AIO_SUBS_NBR_OF) && !update_box; i++ )
+            {
+                //Serial.print("dashboard aio index: "); Serial.println(i); 
+                if ( io_subs[i].updated )
                 {
-                    //Serial.print("dashboard aio index: "); Serial.println(i); 
-                    if ( io_subs[i].updated )
+                    Serial.println("Updated ");
+                    io_subs[i].updated = false;
+                    switch(i)
                     {
-                        Serial.println("Updated ");
-                        io_subs[i].updated = false;
-                        switch(i)
-                        {
-                            case AIO_SUBS_TIME_ISO_8601:
-                              Serial.println("Time updated");
-                              break;
-                            default:
-                              // Str = zone_main_label[io_subs[i].label];
-                              // Str.toCharArray(db_box[2].txt,40);
-                              Str = io_subs[i].label;
-                              Str += " ";
-                              Str += unit_label[io_subs[i].unit_index];
-                              Str.toCharArray(db_box[3].txt, TXT_LEN);
+                        case AIO_SUBS_TIME_ISO_8601:
+                          Serial.println("Time updated");
+                          break;
+                        default:
+                          Str = io_subs[i].label;
+                          Str += " ";
+                          Str += unit_label[io_subs[i].unit_index];
+                          Str.toCharArray(db_box[3].txt, TXT_LEN);
 
-                              Serial.println(io_subs[i].value_str);
-                              strcpy(db_box[1].txt, io_subs[i].value_str);
-                              show_cntr = io_subs[i].show_iter;
-                              update_box = true;
-                              state++;
-                              break;
-                        }
-                        if (update_box)
-                        {
-                            dashboard_draw_box(0);
-                            dashboard_draw_box(1);
-                            dashboard_draw_box(2);
-                            dashboard_draw_box(3);
-                        }
+                          Serial.println(io_subs[i].value_str);
+                          strcpy(db_box[1].txt, io_subs[i].value_str);
+                          show_cntr = io_subs[i].show_iter;
+                          update_box = true;
+                          task[TASK_DASHBOARD].state++;
+                          break;
+                    }
+                    if (update_box)
+                    {
+                        dashboard_draw_box(0);
+                        dashboard_draw_box(1);
+                        dashboard_draw_box(2);
+                        dashboard_draw_box(3);
                     }
                 }
-                break;
-            case 3:
-                if (show_cntr > 0) 
-                    show_cntr--;
-                else 
-                    state = 1;
-                break;
-        }
+            }
+            break;
+        case 3:
+            if (show_cntr > 0) 
+                show_cntr--;
+            else 
+                task[TASK_DASHBOARD].state = 1;
+            break;
     }
+    task_print_status();
 }

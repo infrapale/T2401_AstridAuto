@@ -31,8 +31,8 @@ This sketch uses the GLCD (font 1) and fonts 2, 4, 6, 7, 8
 #include "secrets.h"
 #include "aio_mqtt.h"
 #include "time.h"
-#include <TaHa.h> 
 #include "RTClib.h"
+#include "task.h"
 #include "time.h"
 //#include "aio_mqtt.h"
 #include "menu.h"
@@ -58,10 +58,10 @@ This sketch uses the GLCD (font 1) and fonts 2, 4, 6, 7, 8
 #define SCAN_BUTTON_MS  10
 
 
+
 typedef struct 
 {
   int8_t  connected;
-  uint8_t state;
   uint16_t conn_faults;
   uint8_t at_home;
   uint32_t    next_run;
@@ -71,11 +71,11 @@ typedef struct
 aio_mqtt_ctrl_st aio_mqtt_ctrl =
 {
   .connected = false,
-  .state = 0,
   .conn_faults = 0,
   .at_home = 0,
   .next_run = 0
-};
+};  
+
 
 // Core 0 Data
 module_data_st  me = {'X','1'};
@@ -110,10 +110,10 @@ Adafruit_MQTT_Publish *aio_publ[AIO_PUBL_NBR_OF] =
 
 Adafruit_MQTT_Subscribe *aio_subscription;
 
-// Task Handler Declarations
-TaHa TaHa_aio;
-TaHa TaHa_dashboard;
-TaHa TaHa_read_button;
+
+void read_button_task(void);
+
+extern task_st task[TASK_NBR_OF];
 
 // Core 1 Data
 uint32_t key_scan_time = 0;  //
@@ -152,27 +152,24 @@ void setup(void) {
       //Watchdog.reset();
   }
   
-  TaHa_aio.set_interval(100, RUN_RECURRING, aio_mqtt_stm);
-  TaHa_aio.set_interval(100, RUN_RECURRING, dashboard_update_task);
-  TaHa_read_button.set_interval(100, RUN_RECURRING, read_button_task);
-
   time_begin();
   // dashboard_draw_box(0);
   tft.fillScreen(TFT_BLACK);
   menu_draw();
+  Serial.println(F("setup() completed"));
 }
 
 void setup1()
 {
   menu_initialize();
   key_scan_time = millis() + 10;
+  Serial.println(F("setup1() completed"));
+
 }
 
 void loop() 
 {
-  TaHa_aio.run();
-  TaHa_dashboard.run();
-  TaHa_read_button.run();
+  task_run();
 }
 
 void loop1()
@@ -231,102 +228,92 @@ int8_t aio_mqtt_connect() {
 
 void aio_mqtt_stm(void)
 {
-    static bool initial_run = true;
-    static uint32_t next_run = 0;
     String time_str; 
     String value_str;
     float  value;
     uint32_t unix_time;
 
-    if (initial_run)
-    {
-      Serial.println(F("aio_mqtt_stm - initial run"));
-      aio_mqtt_ctrl.next_run = millis() + 1000;
-      aio_mqtt_ctrl.state = 0;
+    unix_time = 0;  //time_get_epoc_time();
+    // Serial.print(F("aio_mqtt_stm - while "));
 
-    }
-    else if (millis() > aio_mqtt_ctrl.next_run)
+    switch(task[TASK_AIO].state)
     {
-      aio_mqtt_ctrl.next_run = millis() + 5000;
-      unix_time = 0;  //time_get_epoc_time();
-      // Serial.print(F("aio_mqtt_stm - while "));
-      // Serial.println(state);
-      switch(aio_mqtt_ctrl.state)
-      {
-        case 0:
-          Serial.println(F("Initializing AIO MQTT"));
-          // Serial.println(F("\nWiFi connected"));
-          // Serial.println(F("IP address: "));
-          // Serial.println(WiFi.localIP());
-          Serial.println(F("Subscribe to feeds: "));
-          for ( uint8_t findx = AIO_SUBS_TIME_ISO_8601; findx < AIO_SUBS_NBR_OF; findx++)
-          {
-              Serial.println(io_subs[findx].feed->topic);
-              aio_mqtt.subscribe(io_subs[findx].feed);
-          }
-          aio_mqtt_ctrl.state++;
-          break;
-        case 1:
-          aio_mqtt_ctrl.connected =  aio_mqtt_connect();
-          if (aio_mqtt_ctrl.connected == 0) 
-          {
-            aio_mqtt_ctrl.state++;
-            aio_mqtt_ctrl.conn_faults = 0;
-          }
-          break;
-        case 2:   
-          aio_mqtt_ctrl.state++;
-          break;
-        case 3:
-          Serial.print(F("Read Subscription\n"));
-          //time_to_string(&time_str);
-          Serial.println(time_str);
-          while ((aio_subscription = aio_mqtt.readSubscription(500))) 
-          {
-              //Serial.println(aio_subscription->topic);
-              for (uint8_t sindx = AIO_SUBS_TIME_ISO_8601; sindx < AIO_SUBS_NBR_OF; sindx++ )
-              {
-                  if ((aio_subscription == io_subs[sindx].feed) &&
-                      (millis() > io_subs[sindx].next_update_ms ))
-                  {
-                      io_subs[sindx].next_update_ms += AIO_MIN_SUBSCRIBE_IVAL_ms;
-                      Serial.print(io_subs[sindx].feed->topic);
-                      Serial.print(F(": "));
-                      //value_str = (char*)io_subs[sindx].feed->lastread;
-                      strcpy(io_subs[sindx].value_str, (char*)io_subs[sindx].feed->lastread);
-                      Serial.println(io_subs[sindx].value_str);
-                      io_subs[sindx].show_counter = io_subs[sindx].show_iter;
-                      io_subs[sindx].updated = true;
-                      //ctrl.set_temp = atoi((char *)set_temperature.lastread);
-                      //Serial.println(ctrl.set_temp);
-                  }                  
-              }
-          }
-          aio_mqtt_ctrl.state++;
-          break;
-        case 4:
-            if (! aio_publ[AIO_PUBL_VA_HOME_MODE]->publish((float)aio_mqtt_ctrl.at_home)) 
+      case 0:
+        Serial.println(F("Initializing AIO MQTT"));
+        aio_mqtt_ctrl.next_run = millis() + 1000;
+        // Serial.println(F("\nWiFi connected"));
+        // Serial.println(F("IP address: "));
+        // Serial.println(WiFi.localIP());
+        Serial.println(F("Subscribe to feeds: "));
+        for ( uint8_t findx = AIO_SUBS_TIME_ISO_8601; findx < AIO_SUBS_NBR_OF; findx++)
+        {
+            Serial.println(io_subs[findx].feed->topic);
+            aio_mqtt.subscribe(io_subs[findx].feed);
+        }
+        task[TASK_AIO].state++;
+        break;
+      case 1:
+        aio_mqtt_ctrl.connected =  aio_mqtt_connect();
+        if (aio_mqtt_ctrl.connected == 0) 
+        {
+          task[TASK_AIO].state++;
+          aio_mqtt_ctrl.conn_faults = 0;
+        }
+        break;
+      case 2:   
+        task[TASK_AIO].state++;
+        break;
+      case 3:
+        Serial.print(F("Read Subscription\n"));
+        //time_to_string(&time_str);
+        Serial.println(time_str);
+        while ((aio_subscription = aio_mqtt.readSubscription(500))) 
+        {
+            //Serial.println(aio_subscription->topic);
+            for (uint8_t sindx = AIO_SUBS_TIME_ISO_8601; sindx < AIO_SUBS_NBR_OF; sindx++ )
             {
-              Serial.println(F("Publish Failed"));
-            } else 
-            {
-              Serial.println(F("Publish OK!"));
+                if ((aio_subscription == io_subs[sindx].feed) &&
+                    (millis() > io_subs[sindx].next_update_ms ))
+                {
+                    io_subs[sindx].next_update_ms += AIO_MIN_SUBSCRIBE_IVAL_ms;
+                    Serial.print(io_subs[sindx].feed->topic);
+                    Serial.print(F(": "));
+                    //value_str = (char*)io_subs[sindx].feed->lastread;
+                    strcpy(io_subs[sindx].value_str, (char*)io_subs[sindx].feed->lastread);
+                    Serial.println(io_subs[sindx].value_str);
+                    io_subs[sindx].show_counter = io_subs[sindx].show_iter;
+                    io_subs[sindx].updated = true;
+                    //ctrl.set_temp = atoi((char *)set_temperature.lastread);
+                    //Serial.println(ctrl.set_temp);
+                }                  
             }
-            if (aio_mqtt_ctrl.at_home > 0) aio_mqtt_ctrl.at_home = 0;
-            else aio_mqtt_ctrl.at_home = 1;
-            aio_mqtt_ctrl.state = 1;
-          break;
-        case 5:
-          break;
-        case 6:
-          break;
-        case 7:
-          break;
-        case 8:
-          break;
+        }
+        task[TASK_AIO].state++;
+        break;
+      case 4:
+          if (! aio_publ[AIO_PUBL_VA_HOME_MODE]->publish((float)aio_mqtt_ctrl.at_home)) 
+          {
+            Serial.println(F("Publish Failed"));
+          } else 
+          {
+            Serial.println(F("Publish OK!"));
+          }
+          if (aio_mqtt_ctrl.at_home > 0) aio_mqtt_ctrl.at_home = 0;
+          else aio_mqtt_ctrl.at_home = 1;
+          task[TASK_AIO].state = 1;
+        break;
+      case 5:
+        break;
+      case 6:
+        break;
+      case 7:
+        break;
+      case 8:
+        break;
 
-      }
     }
+    task_print_status();
+
 }
 
 void aio_mqtt_print_feeds(void)

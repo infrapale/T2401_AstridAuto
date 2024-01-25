@@ -62,5 +62,7 @@ typedef struct
 
 } disp_box_st;
 
+void read_button_task(void);
+void aio_mqtt_stm(void);
 
 #endif
