@@ -24,8 +24,8 @@ typedef enum
 {
     MENU_MAIN = 0,
     MENU_TIME,
-    MENU_VILLA_ASTRID,
-    MENU_OUTDOOR,
+    MENU_ASTRID,
+    MENU_OPTIO,
     MENU_NBR_OF
 } menu_row_et;
 

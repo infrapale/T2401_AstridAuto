@@ -16,6 +16,7 @@ typedef struct
 typedef enum
 {
     TASK_AIO = 0,
+    TASK_ASTRID_AUTO,
     TASK_DASHBOARD,
     TASK_READ_BUTTON,
     TASK_NBR_OF

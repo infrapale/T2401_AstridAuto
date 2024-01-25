@@ -36,8 +36,8 @@ menu_row_st menu[MENU_NBR_OF] =
     {
       {"Main",MENU_MAIN, dummy_cb },
       {"Time",MENU_TIME, menu_test1 },
-      {"Astrid", MENU_VILLA_ASTRID, menu_relay_on},
-      {"Outd", MENU_OUTDOOR, aio_mqtt_print_feeds}
+      {"Kotona", MENU_ASTRID, menu_relay_on},
+      {"Optiot", MENU_OPTIO, aio_mqtt_print_feeds}
     }
   },
   [MENU_TIME] =
@@ -50,17 +50,17 @@ menu_row_st menu[MENU_NBR_OF] =
       {"__X__", MENU_MAIN, time_set_compiled}
     }
   },
-  [MENU_VILLA_ASTRID] =
+  [MENU_ASTRID] =
   {
     "Villa Astrid", 
     {
       {"Main",MENU_MAIN, dummy_cb },
-      {"Indoor",MENU_VILLA_ASTRID, dummy_cb},
-      {"Outdoor", MENU_VILLA_ASTRID, dummy_cb},
+      {"Kotiin", MENU_MAIN, dummy_cb},
+      {"Pois", MENU_MAIN, dummy_cb},
       {"Main", MENU_MAIN, dummy_cb}
     }
   },
-  [MENU_OUTDOOR] =
+  [MENU_OPTIO] =
   {
     "Outdoor Sensors", 
     {

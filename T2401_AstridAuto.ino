@@ -76,6 +76,10 @@ aio_mqtt_ctrl_st aio_mqtt_ctrl =
   .next_run = 0
 };  
 
+astrid_st astrid =
+{
+    .state = ASTRID_UNDEFINED;
+}
 
 // Core 0 Data
 module_data_st  me = {'X','1'};
