@@ -25,20 +25,6 @@ typedef enum
     AUTO_KEY_NBR_OF
 } auto_key_et;
 
-typedef enum
-{
-    ASTRID_UNDEFINED = 0,
-    ASTRID_AT_HOME,
-    ASTRID_GOING,
-    ASTRID_AWAY,
-    ASTRID_NBR_OF
-} astrid_state_et;
-
-typedef struc
-{
-    astrid_state_et  state;
-
-} astrid_st;
 
 
 typedef struct 
@@ -47,5 +33,7 @@ typedef struct
     char  group;
     char  key;
 } auto_key_st;
+
+void auto_state_machine(void);
 
 #endif

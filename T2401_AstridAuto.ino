@@ -1,6 +1,6 @@
 /**
-@title T2312_PicoConsol.ino
-@git  	https://github.com/infrapale/T2312_PicoConsol
+#define TITLE "T2401 AstridAuto"
+#define GIT  	"https://github.com/infrapale/T2401_AstridAuto"
 
 https://circuitdigest.com/microcontroller-projects/arduino-freertos-tutorial1-creating-freertos-task-to-blink-led-in-arduino-uno
 https://circuitdigest.com/microcontroller-projects/arduino-freertos-tutorial-using-semaphore-and-mutex-in-freertos-with-arduino
@@ -13,7 +13,8 @@ This sketch uses the GLCD (font 1) and fonts 2, 4, 6, 7, 8
   #########################################################################
 */
 #define WAIT 1000
-#define PIRPANA
+#define ANDROID
+//#define PIRPANA
 //#define LILLA_ASTRID
 //#define VILLA_ASTRID
 
@@ -38,6 +39,7 @@ This sketch uses the GLCD (font 1) and fonts 2, 4, 6, 7, 8
 #include "menu.h"
 // #include "log.h"
 #include "dashboard.h"
+#include "auto.h"
 
 
 #include "RTClib.h"
@@ -61,9 +63,9 @@ This sketch uses the GLCD (font 1) and fonts 2, 4, 6, 7, 8
 
 typedef struct 
 {
-  int8_t  connected;
-  uint16_t conn_faults;
-  uint8_t at_home;
+  int8_t      connected;
+  uint16_t    conn_faults;
+  uint8_t     at_home;
   uint32_t    next_run;
 } aio_mqtt_ctrl_st;
 
@@ -78,8 +80,8 @@ aio_mqtt_ctrl_st aio_mqtt_ctrl =
 
 astrid_st astrid =
 {
-    .state = ASTRID_UNDEFINED;
-}
+    .state = ASTRID_UNDEFINED
+};
 
 // Core 0 Data
 module_data_st  me = {'X','1'};
@@ -119,12 +121,33 @@ void read_button_task(void);
 
 extern task_st task[TASK_NBR_OF];
 
+
+task_st task_aio_def =          {"AIO            ", 1000, 0, 0, 255, aio_mqtt_stm  };
+task_st task_dashboard_def =    {"Dashboard      ", 1000, 0, 0, 255,  dashboard_update_task };
+task_st task_read_button_def =  {"Read Button    ", 100, 0, 0, 255,  read_button_task };
+task_st task_astrid_auto_def =  {"Astrid Auto    ", 1000, 0, 0, 255,  auto_state_machine };
+
+  
+
+
+
 // Core 1 Data
 uint32_t key_scan_time = 0;  //
 
 void setup(void) {
+
   pinMode(TFT_BL, OUTPUT);  
   digitalWrite(TFT_BL, HIGH);
+  
+  delay(3000);
+  Serial.begin(9600); // For debug
+  //Serial1.begin(9600); // For something new
+
+  task_initialize(TASK_NBR_OF);
+  task_set_task(TASK_AIO, &task_aio_def); 
+  task_set_task(TASK_DASHBOARD, &task_dashboard_def); 
+  task_set_task(TASK_READ_BUTTON, &task_read_button_def); 
+  task_set_task(TASK_ASTRID_AUTO, &task_astrid_auto_def);
 
   // Serial1.setTX(PIN_SERIAL1_TX);
   // Serial1.setRX(PIN_SERIAL1_RX);
@@ -133,10 +156,7 @@ void setup(void) {
   tft.setRotation(3);
   tft.setTextSize(1);
 
-  delay(3000);
-  Serial.begin(9600); // For debug
-  // Serial1.begin(9600); // For something new
-
+  
   Serial.println("TFT Meters");
   Serial.println(F(APP_NAME));
   Serial.print(F("Compiled: "));Serial.print(__DATE__);
@@ -160,14 +180,15 @@ void setup(void) {
   // dashboard_draw_box(0);
   tft.fillScreen(TFT_BLACK);
   menu_draw();
+  menu_initialize();
+
   Serial.println(F("setup() completed"));
 }
 
 void setup1()
 {
-  menu_initialize();
   key_scan_time = millis() + 10;
-  Serial.println(F("setup1() completed"));
+  //Serial.println(F("setup1() completed"));
 
 }
 
@@ -187,6 +208,7 @@ void loop1()
 
 void read_button_task(void)
 {
+  task_print_status();
   char c = menu_read_button();
   if (c != 0x00) 
   {
@@ -239,7 +261,7 @@ void aio_mqtt_stm(void)
 
     unix_time = 0;  //time_get_epoc_time();
     // Serial.print(F("aio_mqtt_stm - while "));
-
+    task_print_status();
     switch(task[TASK_AIO].state)
     {
       case 0:

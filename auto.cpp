@@ -1,5 +1,6 @@
 #include "auto.h"
 #include "main.h"
+#include "task.h"
 
 extern task_st task[TASK_NBR_OF];
 extern astrid_st astrid;
@@ -29,6 +30,7 @@ auto_key_st key_func[AUTO_KEY_NBR_OF] =
 
 void auto_state_machine(void)
 {
+    task_print_status();
     switch(task[TASK_ASTRID_AUTO].state)
     {
       case ASTRID_UNDEFINED:
@@ -41,5 +43,5 @@ void auto_state_machine(void)
       case ASTRID_AWAY:
         break;
     }
-    task_print_status()
+    task_print_status();
 }

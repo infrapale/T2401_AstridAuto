@@ -137,6 +137,8 @@ void dashboard_update_task(void)
     String          Str;
     uint8_t         show_cntr = 0;
 
+    task_print_status();
+
     switch (task[TASK_DASHBOARD].state)
     {
         case 0:

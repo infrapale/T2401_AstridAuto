@@ -22,6 +22,14 @@
 
 #define SerialRfm  Serial1
 
+typedef enum
+{
+    TASK_AIO = 0,
+    TASK_DASHBOARD,
+    TASK_READ_BUTTON,
+    TASK_ASTRID_AUTO,
+    TASK_NBR_OF
+} tasks_et;
 
 
 
@@ -39,6 +47,29 @@ typedef enum
     UNIT_NBR_OF
 } unit_et;
 
+
+typedef enum
+{
+    ASTRID_STATE_UNDEFINED = 0,
+    ASTRID_STATE_AT_HOME,
+    ASTRID_STATE_AWAY,
+    ASTRID_STATE_NBR_OF
+} xxastrid_state_et;
+
+typedef enum
+{
+    ASTRID_UNDEFINED = 0,
+    ASTRID_AT_HOME,
+    ASTRID_GOING,
+    ASTRID_AWAY,
+    ASTRID_NBR_OF
+} astrid_state_et;
+
+
+typedef struct
+{
+    astrid_state_et  state;
+} astrid_st;
 
 
 typedef struct

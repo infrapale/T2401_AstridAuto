@@ -28,6 +28,7 @@ void menu_relay_on(void)
     time_test_iso_8601();
 }
 
+
 menu_row_st menu[MENU_NBR_OF] =
 {
   [MENU_MAIN] =
@@ -65,8 +66,8 @@ menu_row_st menu[MENU_NBR_OF] =
     "Outdoor Sensors", 
     {
       {"Temp",MENU_MAIN, dummy_cb },
-      {"Trend",MENU_VILLA_ASTRID, dummy_cb},
-      {"Limit", MENU_VILLA_ASTRID, dummy_cb},
+      {"Trend",MENU_MAIN, dummy_cb},
+      {"Limit", MENU_MAIN, dummy_cb},
       {"Main", MENU_MAIN, dummy_cb}
     }
   }
